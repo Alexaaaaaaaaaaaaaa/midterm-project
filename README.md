@@ -1,1 +1,2 @@
-# midterm-project
+# Midterm project
+## Dog quiz
