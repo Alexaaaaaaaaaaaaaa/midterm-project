@@ -27,7 +27,7 @@ module Templating =
             "Breeds" => EndPoint.Breeds
         ]
 
-    let index ctx action (title: string) (body: Doc list) =
+    let Main ctx action (title: string) (body: Doc list) =
         Content.Page(
             Templates.MainTemplate()
                 .Title(title)
@@ -55,7 +55,7 @@ module Site =
         ]
 
     [<Website>]
-    let index =
+    let Main =
         Application.MultiPage (fun ctx endpoint ->
             match endpoint with
             | EndPoint.Home -> HomePage ctx
