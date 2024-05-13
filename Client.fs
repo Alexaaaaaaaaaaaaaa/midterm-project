@@ -8,7 +8,7 @@ open WebSharper.UI.Notation
 [<JavaScript>]
 module Templates =
 
-    type MainTemplate = Templating.Template<"Main.html", ClientLoad.FromDocument, ServerLoad.WhenChanged>
+    type MainTemplate = Templating.Template<"index.html", ClientLoad.FromDocument, ServerLoad.WhenChanged>
 
 [<JavaScript>]
 module Server =
@@ -27,7 +27,7 @@ module Server =
 [<JavaScript>]
 module Client =
 
-    let Main () =
+    let index () =
         let doggo = Var.Create ""
         Templates.MainTemplate.MainForm()
             .OnSend(fun e ->
