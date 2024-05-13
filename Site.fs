@@ -42,13 +42,13 @@ module Site =
     open type WebSharper.UI.ClientServer
 
     let HomePage ctx =
-        Templating.index ctx EndPoint.Home "Quiz" [
+        Templating.Main ctx EndPoint.Home "Quiz" [
             h1 [] [text "Take this test to see which dog is for you!"]
             div [] [client (Client.Main())]
         ]
 
     let BreedPage ctx =
-        Templating.index ctx EndPoint.Breeds "Dog Breeds" [
+        Templating.Main ctx EndPoint.Breeds "Dog Breeds" [
             h1 [] [text "Dog breeds"]
             h3 [] [text "This is a list of the dog breeds used in this quiz."]
             p [] [text "Golden retriever, boxer, alaskan malamute, greyhound, chow chow, bullmastiff, papillon, beagle, newfoundland, great dane, jack russell terrier, bichon frise, dachshound, chihuahua"]
