@@ -27,7 +27,7 @@ module Server =
 [<JavaScript>]
 module Client =
 
-    let index () =
+    let Main () =
         let doggo = Var.Create ""
         Templates.MainTemplate.MainForm()
             .OnSend(fun e ->
