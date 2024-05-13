@@ -1,4 +1,4 @@
-﻿namespace midterm_project
+namespace midterm_project
 
 open WebSharper
 open WebSharper.UI
@@ -49,3 +49,4 @@ module Client =
                 } |> Async.StartImmediate)
             .Dog(doggo.View)
             .Doc()
+
