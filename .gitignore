@@ -15,4 +15,4 @@ obj/
 /.idea/
 *.userwebsharper.log
 websharper.log
-wwwroot/*.js
+wwwroot/**/*.js
