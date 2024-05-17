@@ -2,40 +2,31 @@
 
 open WebSharper
 open WebSharper.UI
+open WebSharper.UI.Client
 open WebSharper.UI.Templating
 open WebSharper.UI.Notation
+
+type EndPoint =
+    | [<EndPoint "/">] Quiz
+    | [<EndPoint "/dogs">] Breeds
 
 [<JavaScript>]
 module Templates =
 
-    type MainTemplate = Templating.Template<"index.html", ClientLoad.FromDocument, ServerLoad.WhenChanged>
+    type MainTemplate = Templating.Template<"wwwroot/index.html", ClientLoad.FromDocument, ServerLoad.WhenChanged>
+
 
 [<JavaScript>]
-module Server =
-
-    [<Rpc>]
-    let DoSomething input =
-        let R (s: string) = System.String(s.ToCharArray())
-        async {
-            return R input
-        }
-    let Echo msg =
-        async {
-            return sprintf " %s." msg
-        }
-
-[<JavaScript>]
-module Client =
-
-    let Main () =
+module Pages =
+    let QuizPage () =
         let doggo = Var.Create ""
-        Templates.MainTemplate.MainForm()
+        Templates.MainTemplate.QuizPage()
             .OnSend(fun e ->
                 async {
-                    let! size =  Server.DoSomething e.Vars.Size.Value
-                    let! active = Server.DoSomething e.Vars.Active.Value
-                    let! family = Server.DoSomething e.Vars.Family.Value
-                    let! fur = Server.DoSomething e.Vars.Fur.Value
+                    let size = "large"
+                    let active = "sporty"
+                    let family = "yes"
+                    let fur = "long"
                     let dog = (if size = "large" then (if active = "sporty" then (if family = "yes" then (if fur = "long" then "golden retriever" else if fur="short" then "boxer" else "Please choose fur type") 
                                                                                       else if family = "no" then (if fur = "long" then "alaskan malamute" else if fur="short" then "greyhound" else "Please choose fur type") else "Please choose if you want a family dog or not") 
                                                         else if active = "couch" then (if family = "yes" then (if fur = "long" then "newfoundland" else if fur = "short" then "great dane" else "Please choose fur type")
@@ -44,8 +35,54 @@ module Client =
                                                                                         else if family = "no" then (if fur = "long" then "jack russell terrier (has a longer fur version)" else if fur = "short" then "jack russell terrier" else "Please choose fur type") else "Please choose if you want a family dog or not") 
                                                              else if active = "couch" then (if family = "yes" then (if fur = "long" then "bichon frisé" else if fur = "short" then "dachshound" else "Please choose fur type") 
                                                                                               else if family = "no" then (if fur = "long" then "chihuahua" else if fur = "short" then "chihuahua" else "Please choose fur type")else "Please choose if you want a family dog or not")else "Please choose activeness") else "Please choose a size")
-                    let! out = Server.Echo <| sprintf "%s" dog
-                    doggo := out
+                    doggo := sprintf "%s" dog
                 } |> Async.StartImmediate)
             .Dog(doggo.View)
             .Doc()
+
+    let BreedsPage () =
+        Templates.MainTemplate.BreedsPage()
+            .Doc()
+
+[<JavaScript>]
+module App =
+    open WebSharper.Sitelets
+    open WebSharper.UI.Html
+
+    // Create a router for our endpoints
+    let router = Router.Infer<EndPoint>()
+    // Install our client-side router and track the current page
+    let currentPage = Router.InstallHash EndPoint.Quiz router
+
+    type Router<'T when 'T: equality> with
+        member this.LinkHash (ep: 'T) = "#" + this.Link ep
+
+    // Compute a menubar where the menu item for the given endpoint is active
+    let MenuBar (ctx: Router<EndPoint>) endpoint : Doc list =
+        let ( => ) txt act =
+            let isActive = if endpoint = act then "nav-link active" else "nav-link"
+            li [attr.``class`` "nav-item"] [
+                a [
+                    attr.``class`` isActive
+                    attr.href (ctx.Link act)
+                ] [text txt]
+            ]
+        [
+            "Quiz" => EndPoint.Quiz
+            "Breeds" => EndPoint.Breeds
+        ]
+
+    [<SPAEntryPoint>]
+    let Main () =
+        let renderInnerPage (currentPage: Var<EndPoint>) =
+            currentPage.View.Map (fun endpoint ->
+                match endpoint with
+                | Quiz      -> Pages.QuizPage()
+                | Breeds    -> Pages.BreedsPage()
+            )
+            |> Doc.EmbedView
+       
+        Templates.MainTemplate()
+            .MenuBar(MenuBar router EndPoint.Quiz)
+            .Body(renderInnerPage currentPage)
+            .Bind()

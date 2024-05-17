@@ -4,7 +4,6 @@ open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.DependencyInjection
 open WebSharper.AspNetCore
-open midterm_project
 
 [<EntryPoint>]
 let main args =
@@ -28,7 +27,6 @@ let main args =
     app.UseHttpsRedirection()
         .UseAuthentication()
         .UseStaticFiles()
-        .UseWebSharper(fun ws -> ws.Sitelet(Site.Main) |> ignore)
     |> ignore
 
     app.Run()
