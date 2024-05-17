@@ -25,6 +25,7 @@ let main args =
         |> ignore
 
     app.UseHttpsRedirection()
+        .UseDefaultFiles()
         .UseAuthentication()
         .UseStaticFiles()
     |> ignore

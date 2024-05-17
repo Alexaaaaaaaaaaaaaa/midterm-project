@@ -64,7 +64,7 @@ module App =
             li [attr.``class`` "nav-item"] [
                 a [
                     attr.``class`` isActive
-                    attr.href (ctx.Link act)
+                    attr.href (ctx.LinkHash act)
                 ] [text txt]
             ]
         [
