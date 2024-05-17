@@ -23,18 +23,57 @@ module Pages =
         Templates.MainTemplate.QuizPage()
             .OnSend(fun e ->
                 async {
-                    let size = "large"
-                    let active = "sporty"
-                    let family = "yes"
-                    let fur = "long"
-                    let dog = (if size = "large" then (if active = "sporty" then (if family = "yes" then (if fur = "long" then "golden retriever" else if fur="short" then "boxer" else "Please choose fur type") 
-                                                                                      else if family = "no" then (if fur = "long" then "alaskan malamute" else if fur="short" then "greyhound" else "Please choose fur type") else "Please choose if you want a family dog or not") 
-                                                        else if active = "couch" then (if family = "yes" then (if fur = "long" then "newfoundland" else if fur = "short" then "great dane" else "Please choose fur type")
-                                                                                         else if family = "no" then (if fur = "long" then "chow chow" else if fur = "short" then "bullmastiff (also a good family dog)" else "Please choose fur type") else "Please choose if you want a family dog or not") else "Please choose if you want a family dog or not") 
-                               else if size = "small" then (if active = "sporty" then (if family = "yes" then (if fur = "long" then "papillon" else if fur = "short" then "beagle" else "Please choose fur type") 
-                                                                                        else if family = "no" then (if fur = "long" then "jack russell terrier (has a longer fur version)" else if fur = "short" then "jack russell terrier" else "Please choose fur type") else "Please choose if you want a family dog or not") 
-                                                             else if active = "couch" then (if family = "yes" then (if fur = "long" then "bichon frisé" else if fur = "short" then "dachshound" else "Please choose fur type") 
-                                                                                              else if family = "no" then (if fur = "long" then "chihuahua" else if fur = "short" then "chihuahua" else "Please choose fur type")else "Please choose if you want a family dog or not")else "Please choose activeness") else "Please choose a size")
+                    // Grab user choices
+                    let! size = e.Vars.Size
+                    let! active = e.Vars.Active
+                    let! family = e.Vars.Family
+                    let! fur = e.Vars.Fur
+                    // Compute dog based on selection
+                    let dog =
+                        match size, active, family, fur with
+                        // Sanity checks for unset/invalid values.
+                        | size, _, _, _ when size <> "large" && size <> "small" ->
+                            "Please choose size"
+                        | _, act, _, _ when act <> "sporty" && act <> "couch" ->
+                            "Please choose activeness"
+                        | _, _, fam, _ when fam <> "yes" && fam <> "no" ->
+                            "Please choose if you want a family dog or not"
+                        | _, _, _, fur when fur <> "long" && fur <> "short" ->
+                            "Please choose fur type"
+                        // Compute dog
+                        | "large", "sporty", "yes", "long" ->
+                            "golden retriever"
+                        | "large", "sporty", "yes", "short" ->
+                            "boxer"
+                        | "large", "sporty", "no", "long" ->
+                           "alaskan malamute"
+                        | "large", "sporty", "no", "short" ->
+                            "greyhound"
+                        | "large", "couch", "yes", "long" ->
+                            "newfoundland"
+                        | "large", "couch", "yes", "short" ->
+                            "great dane"
+                        | "large", "couch", "no", "long"
+                        | "large", "couch", "no", "short" ->
+                            "not sure" // TODO
+                        | "small", "sporty", "yes", "long" ->
+                            "papillon"
+                        | "small", "sporty", "yes", "short" ->
+                            "beagle"
+                        | "small", "sporty", "no", "long" ->
+                            "jack russell terrier (has a longer fur version)"
+                        | "small", "sporty", "no", "short" ->
+                            "jack russell terrier"
+                        | "small", "couch", "yes", "long" ->
+                            "bichon frisé"
+                        | "small", "couch", "yes", "short" ->
+                            "dachshound"
+                        | "small", "couch", "no", "long" ->
+                            "chihuahua" // CHECK
+                        | "small", "couch", "no", "short" ->
+                            "chihuahua"
+                        | _ ->
+                            "Not sure" // Fallback, should never happen
                     doggo := sprintf "%s" dog
                 } |> Async.StartImmediate)
             .Dog(doggo.View)
