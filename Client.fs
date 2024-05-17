@@ -55,7 +55,7 @@ module Pages =
                             "great dane"
                         | "large", "couch", "no", "long"
                         | "large", "couch", "no", "short" ->
-                            "not sure" // TODO
+                            "bullmastiff (also a good family dog)"
                         | "small", "sporty", "yes", "long" ->
                             "papillon"
                         | "small", "sporty", "yes", "short" ->
