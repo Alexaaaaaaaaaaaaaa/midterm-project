@@ -53,7 +53,6 @@ module Pages =
                             "newfoundland"
                         | "large", "couch", "yes", "short" ->
                             "great dane"
-                        | "large", "couch", "no", "long"
                         | "large", "couch", "no", "short" ->
                             "bullmastiff (also a good family dog)"
                         | "small", "sporty", "yes", "long" ->
